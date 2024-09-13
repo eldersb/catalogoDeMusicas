@@ -10,41 +10,43 @@
                     <v-form v-model="formIsValid" ref="form" @submit.prevent="saveMusic">
                         <v-container>
                             <v-row>
-                                <v-col cols="12" md="8">
+                                <v-col cols="12" md="12">
                                     <v-text-field
                                     v-model="music.songName"
-                                    :counter="10" :rules="songRules"
+                                    :rules="songRules"
                                     label="Nome da música"
                                     required
                                     >
                                   </v-text-field>
                                 </v-col>
 
-                                <v-col cols="12" md="8">
+                                <v-col cols="12" md="12">
                                     <v-text-field
                                     v-model="music.artistName"
-                                    :counter="10"
                                     :rules="artistRules"
                                     label="Nome do artista"
                                     required></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12" md="8">
+                                <v-col cols="12" md="12">
                                     <v-text-field
                                      v-model="music.genre"
                                      :rules="genreRules"
                                      label="Estilo musical"
                                      required
-                                     class="mb-5"
                                     >
                                     </v-text-field>
 
-                                    <v-text-field
+
+                                </v-col>
+
+                                <v-col cols="12" md="12">
+                                  <v-text-field
                                      v-model="music.range"
                                       :rules="rangeRules"
                                       label="Digite uma pontuação entre 1 e 5"
                                       required
-                                        >
+                                      >
                                       </v-text-field>
                                 </v-col>
 
@@ -147,7 +149,7 @@ export default {
     methods: {
         saveMusic(){
 
-          this.$refs.form.validate();
+          // this.$refs.form.validate();
 
           if(this.checkMusic()){
             this.dialogTitle = "Ops!!";
@@ -159,8 +161,9 @@ export default {
           if(this.formIsValid) {
 
               this.musics.push({...this.music});
+              this.$refs.form.reset();
+              this.$refs.form.resetValidation();
 
-              this.music = {songName: '', artistName: '', genre: '', range: ''};
 
               this.dialogTitle = "Ok!!"
               this.dialogMessage = "Música cadastrada com sucesso!"
@@ -182,7 +185,5 @@ export default {
 </script>
 
 <style scoped>
-    /* .custom-text-field {
-      color: #FF5722;
-    } */
+
 </style>
