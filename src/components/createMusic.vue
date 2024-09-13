@@ -1,38 +1,55 @@
 <template>
     <v-card class="mx-auto" max-width="960">
         <v-layout>
-            <v-app-bar color="pink-lighten-2" density="compact">
+            <v-app-bar color="indigo-darken-4" density="compact">
                 <v-app-bar-title>Cadastre sua música favorita</v-app-bar-title>
             </v-app-bar>
 
             <v-main>
                 <v-container fluid>
-                    <v-form v-model="valid" @submit.prevent>
+                    <v-form v-model="formIsValid" ref="form" @submit.prevent="saveMusic">
                         <v-container>
                             <v-row>
                                 <v-col cols="12" md="8">
-                                    <v-text-field v-model="music.songName" :counter="10" :rules="songRules"
-                                        label="Nome da música" hide-details required></v-text-field>
+                                    <v-text-field
+                                    v-model="music.songName"
+                                    :counter="10" :rules="songRules"
+                                    label="Nome da música"
+                                    required
+                                    >
+                                  </v-text-field>
                                 </v-col>
 
                                 <v-col cols="12" md="8">
-                                    <v-text-field v-model="music.artistName" :counter="10" :rules="artistRules"
-                                        label="Nome do artista" hide-details required></v-text-field>
+                                    <v-text-field
+                                    v-model="music.artistName"
+                                    :counter="10"
+                                    :rules="artistRules"
+                                    label="Nome do artista"
+                                    required></v-text-field>
                                 </v-col>
 
                                 <v-col cols="12" md="8">
-                                    <v-text-field v-model="music.genre" :rules="genreRules" label="Estilo musical"
-                                        hide-details required class="mb-5"></v-text-field>
+                                    <v-text-field
+                                     v-model="music.genre"
+                                     :rules="genreRules"
+                                     label="Estilo musical"
+                                     required
+                                     class="mb-5"
+                                    >
+                                    </v-text-field>
 
-                                    <v-text-field v-model="music.range" :rules="rangeRules" label="Pontuação" hide-details
-                                        required></v-text-field>
-
-
-
+                                    <v-text-field
+                                     v-model="music.range"
+                                      :rules="rangeRules"
+                                      label="Digite uma pontuação entre 1 e 5"
+                                      required
+                                        >
+                                      </v-text-field>
                                 </v-col>
 
                                 <v-col cols="6">
-                                    <v-btn color="white" @click="saveMusic" type="submit">Cadastrar</v-btn>
+                                    <v-btn color="grey-darken-3" type="submit">Cadastrar</v-btn>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -46,7 +63,7 @@
 
     <v-card class="mx-auto mt-5" max-width="960">
         <v-layout>
-            <v-app-bar color="pink-lighten-2" density="compact">
+            <v-app-bar color="indigo-darken-4" density="compact">
                 <v-app-bar-title>Músicas cadastradas</v-app-bar-title>
             </v-app-bar>
 
@@ -70,9 +87,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="item in desserts" :key="item.name">
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.calories }}</td>
+                            <tr v-for="music in musics" :key="music.songName">
+                                <td>{{ music.songName }}</td>
+                                <td>{{ music.artistName }}</td>
+                                <td>{{ music.genre }}</td>
+                                <td>{{ music.range }}</td>
                             </tr>
                         </tbody>
                     </v-table>
@@ -94,9 +113,11 @@
 <script>
 export default {
     data: () => ({
+        formIsValid: false,
+        dialog: false,
+        dialogTitle: '',
+        dialogMessage: '',
         valid: false,
-        firstname: '',
-        lastname: '',
         music: {
             songName: '',
             artistName: '',
@@ -104,38 +125,64 @@ export default {
             range: ''
         },
         musics: [],
-        nameRules: [
-            value => {
-                if (value) return true
-
-                return 'Name is required.'
-            },
-            value => {
-                if (value?.length <= 10) return true
-
-                return 'Name must be less than 10 characters.'
-            },
+        songRules: [
+          value => (value && value.trim()) ? true : 'Nome da música é obrigatório.',
         ],
-        email: '',
-        emailRules: [
-            value => {
-                if (value) return true
+        artistRules: [
+          value => (value && value.trim()) ? true : 'Nome do artista é obrigatório.',
+        ],
+        genreRules: [
+          value => (value && value.trim()) ? true : 'Estilo musical é obrigatório.',
+        ],
+        rangeRules: [
+          value => (value && value.trim()) ? true : 'Pontuação é obrigatória.',
+          value => {
+            if (value && value >= 1 && value <= 5) return true
 
-                return 'E-mail is requred.'
-            },
-            value => {
-                if (/.+@.+\..+/.test(value)) return true
-
-                return 'E-mail must be valid.'
-            },
+            return 'Pontuação deve ser entre 1 e 5'
+          }
         ],
     }),
 
     methods: {
         saveMusic(){
-            this.musics.push(this.music)
+
+          this.$refs.form.validate();
+
+          if(this.checkMusic()){
+            this.dialogTitle = "Ops!!";
+            this.dialogMessage = "Essa música já foi cadastrada!";
+            this.dialog = true;
+            return
+          }
+
+          if(this.formIsValid) {
+
+              this.musics.push({...this.music});
+
+              this.music = {songName: '', artistName: '', genre: '', range: ''};
+
+              this.dialogTitle = "Ok!!"
+              this.dialogMessage = "Música cadastrada com sucesso!"
+              this.dialog = true
+
+            }
+
+        },
+        checkMusic() {
+            return this.musics.some(existingMusic =>
+              existingMusic.songName === this.music.songName
+            );
+            }
         }
+
     }
 
-}
+
 </script>
+
+<style scoped>
+    /* .custom-text-field {
+      color: #FF5722;
+    } */
+</style>

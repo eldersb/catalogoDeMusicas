@@ -4,7 +4,7 @@
   >
     <v-layout>
       <v-app-bar
-        color="pink-lighten-1"
+        color="indigo-darken-4"
       >
         <template v-slot:prepend>
           <v-app-bar-nav-icon></v-app-bar-nav-icon>
@@ -23,7 +23,7 @@
           </v-container>
         </v-main>
 
-     
+
     </v-layout>
   </v-card>
 </template>
